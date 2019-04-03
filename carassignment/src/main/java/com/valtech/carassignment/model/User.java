@@ -9,17 +9,13 @@ import javax.persistence.Id;
 @Entity
 public class User {
 	@Id
-	@Column( name = "user_id")
 	@GeneratedValue( strategy = GenerationType.IDENTITY)
 	private int userId;
 	
-	@Column (name = "firstname")
 	private String firstname;
 	
-	@Column (name = "lastname")
 	private String lastname;
 
-	@Column (name = "email")
 	private String email;
 
 	

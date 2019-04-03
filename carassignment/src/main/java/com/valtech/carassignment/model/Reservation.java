@@ -14,7 +14,6 @@ import javax.persistence.OneToOne;
 public class Reservation {
 	
 	@Id
-	@Column( name = "Reservation_id")
 	@GeneratedValue( strategy = GenerationType.IDENTITY)
 	private int 		  reservationId;
 	

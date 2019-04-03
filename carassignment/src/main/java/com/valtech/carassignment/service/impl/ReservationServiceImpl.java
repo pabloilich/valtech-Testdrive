@@ -1,12 +1,14 @@
 package com.valtech.carassignment.service.impl;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.valtech.carassignment.apierror.ExistException;
 import com.valtech.carassignment.apierror.NotFoundException;
@@ -18,6 +20,7 @@ import com.valtech.carassignment.repository.ReservationRepository;
 import com.valtech.carassignment.repository.UserRepository;
 import com.valtech.carassignment.service.ReservationService;
 
+@Service
 public class ReservationServiceImpl implements ReservationService{
 
 	private ReservationRepository reservationRepository;
@@ -87,7 +90,7 @@ public class ReservationServiceImpl implements ReservationService{
 		}
 		
 		//Buscamos si tiene reservas a partir del dia de hoy en adelante ya que solo se permite solo una reserva por cliente.
-		List<Reservation> reservations = reservationRepository.findAllByUserIdAndRegistrationTimeAfter(user.getUser_id(), LocalDate.now());
+		List<Reservation> reservations = reservationRepository.findByUserUserIdAndRegistrationTimeAfter ( user.getUser_id(),LocalDateTime.now());
 		if(reservations.size()>0)
 		{
 			throw new ExistException("El usuario ya posee una reserva, no puede realizar otra");

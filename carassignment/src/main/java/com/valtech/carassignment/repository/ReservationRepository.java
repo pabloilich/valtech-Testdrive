@@ -1,6 +1,7 @@
 package com.valtech.carassignment.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,5 +18,5 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
 		
 		Reservation findByRegistrationTime(LocalDate registrationTime);
 		
-		List<Reservation> findAllByUserIdAndRegistrationTimeAfter(int userId , LocalDate registrationTime);
+		List<Reservation> findByUserUserIdAndRegistrationTimeAfter(int userId , LocalDateTime registrationTime);
 }
