@@ -7,7 +7,6 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,8 +21,6 @@ import com.valtech.carassignment.dto.response.ReservationResponse;
 import com.valtech.carassignment.service.ReservationService;
 
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 
 @RestController
 @RequestMapping({"/reservations"})
@@ -41,9 +38,9 @@ public class ReservationController {
 			+ "no se coloca rango por defecto considra 90 dias a partir del dia de hoy", 
 		      response = LocalDate.class)
 	@RequestMapping(value = "/available-reservation", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<LocalDate>> getAvailableReservation( @RequestParam(name = "dateFrom")@DateTimeFormat(iso = ISO.DATE)
-    LocalDate dateFrom,@RequestParam(name = "dateto")@DateTimeFormat(iso = ISO.DATE)
-    LocalDate dateTo ) {
+	public ResponseEntity<List<LocalDate>> getAvailableReservation( @RequestParam(name = "dateFrom", required=false)@DateTimeFormat(pattern="dd/MM/yyyy")
+    @Valid LocalDate dateFrom,@RequestParam(name = "dateto", required=false) @DateTimeFormat(pattern="dd/MM/yyyy")
+	@Valid LocalDate dateTo ) {
 		
 		return ResponseEntity.ok().body(reservationService.getAvailableReservationByDateRange(dateFrom,dateTo));
 		

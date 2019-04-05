@@ -13,8 +13,8 @@ import com.valtech.carassignment.model.Reservation;
 public interface ReservationRepository extends JpaRepository<Reservation, Integer>{
 	  
 		List<Reservation> findAllByRegistrationTimeBetween(
-			      LocalDate registrationTimeStart,
-			      LocalDate registrationTimeEnd);
+				LocalDateTime registrationTimeStart,
+				LocalDateTime registrationTimeEnd);
 		
 		Reservation findByRegistrationTime(LocalDate registrationTime);
 		

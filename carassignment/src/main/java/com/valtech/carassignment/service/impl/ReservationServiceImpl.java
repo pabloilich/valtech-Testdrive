@@ -2,6 +2,7 @@ package com.valtech.carassignment.service.impl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,12 +50,12 @@ public class ReservationServiceImpl implements ReservationService{
 			fromDate  = LocalDate.now();
 		
 		if(toDate == null)
-			toDate = LocalDate.now().plusDays(60); //si no colocamos una fecha se deja seteado a 60 dias.
+			toDate = LocalDate.now().plusDays(90); //si no colocamos una fecha se deja seteado a 60 dias.
 		
 		List<LocalDate> datesInRange = getDatesInRange(fromDate, toDate);
 	    
 		//Obtenemos las fechas reservadas en la DB
-	    List<LocalDate> reservations =  reservationRepository.findAllByRegistrationTimeBetween(fromDate, toDate).stream().
+	    List<LocalDate> reservations =  reservationRepository.findAllByRegistrationTimeBetween(LocalDateTime.of(fromDate, LocalTime.now())  , LocalDateTime.of(toDate,LocalTime.MAX)).stream().
 	    						map(to->
 	    								{
 	    									return  to.getRegistrationTime().toLocalDate();
@@ -108,7 +109,8 @@ public class ReservationServiceImpl implements ReservationService{
 
 	@Override
 	public ReservationResponse updateReservation(int idReservation, ReservationRequest reservation) {
-		 return reservationRepository.findById(idReservation).
+		
+		return reservationRepository.findById(idReservation).
 				 map(record -> {
 					 record.setRegistrationTime(reservation.getRegistrationTime());
 					 record.setUser(userRepository.findByEmail(reservation.getEmail()));
