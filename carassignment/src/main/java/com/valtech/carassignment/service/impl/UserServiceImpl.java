@@ -1,7 +1,5 @@
 package com.valtech.carassignment.service.impl;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,12 +23,6 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public User getUser(int id) {
 		return userRepository.findById(id).get();
-	}
-
-	@Override
-	public List<User> getUSers() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

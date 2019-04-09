@@ -57,5 +57,7 @@ public class User {
 		this.firstname 	= firstName;
 		this.lastname   = lastName;
 	}
-	
+	public User() {
+		
+	}
 }

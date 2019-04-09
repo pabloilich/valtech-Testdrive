@@ -2,6 +2,7 @@ package com.valtech.carassignment.model;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -19,7 +20,7 @@ public class Reservation {
 	
 	private LocalDateTime registrationTime;
 	
-	@OneToOne(fetch=FetchType.EAGER)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	private User		  user;
 	
 	
@@ -42,11 +43,13 @@ public class Reservation {
 		this.user = user;
 	}
 	
-	public Reservation (LocalDateTime registrationTime, String firstname , String lastName, String email )
+	public Reservation (LocalDateTime registrationTime, User  user )
 	{
 		this.registrationTime = registrationTime;
-		User user = new User(firstname,lastName,email);
 		this.user = user;
 	}
-
+	public Reservation ()
+	{
+		
+	}
 }

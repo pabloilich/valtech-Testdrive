@@ -16,7 +16,14 @@ public interface ReservationRepository extends JpaRepository<Reservation, Intege
 				LocalDateTime registrationTimeStart,
 				LocalDateTime registrationTimeEnd);
 		
-		Reservation findByRegistrationTime(LocalDate registrationTime);
 		
 		List<Reservation> findByUserUserIdAndRegistrationTimeAfter(int userId , LocalDateTime registrationTime);
+
+		 default List<Reservation> findByRegistrationTime(LocalDate dateRegistration) {
+
+			return findAllByRegistrationTimeBetween(dateRegistration.atStartOfDay(), dateRegistration.plusDays(1).atStartOfDay());
+
+		 }
+
+	
 }

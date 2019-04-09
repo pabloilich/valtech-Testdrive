@@ -38,9 +38,9 @@ public class ReservationController {
 			+ "no se coloca rango por defecto considra 90 dias a partir del dia de hoy", 
 		      response = LocalDate.class)
 	@RequestMapping(value = "/available-reservation", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<List<LocalDate>> getAvailableReservation( @RequestParam(name = "dateFrom", required=false)@DateTimeFormat(pattern="dd/MM/yyyy")
-    @Valid LocalDate dateFrom,@RequestParam(name = "dateto", required=false) @DateTimeFormat(pattern="dd/MM/yyyy")
-	@Valid LocalDate dateTo ) {
+	public ResponseEntity<List<LocalDate>> getAvailableReservation ( 
+			@RequestParam(name = "dateFrom", required=false)@DateTimeFormat(pattern="dd/MM/yyyy") LocalDate dateFrom,
+			@RequestParam(name = "dateto", required=false) @DateTimeFormat(pattern="dd/MM/yyyy") LocalDate dateTo ) {
 		
 		return ResponseEntity.ok().body(reservationService.getAvailableReservationByDateRange(dateFrom,dateTo));
 		
@@ -73,7 +73,7 @@ public class ReservationController {
 	@ApiOperation(value = "Endpoint que nos permite cancelar  una reserva previa mediante el ID de reserva previamente generado", 
 		      response = ReservationResponse.class)
 	@RequestMapping(value = "/cancel-reservation", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
-	  public void cancelReservation(@PathVariable("reservationId") int reservationId) {
+	  public void cancelReservation(@RequestParam("reservationId") int reservationId) {
 			reservationService.cancelReservation(reservationId);
 	  }
 	

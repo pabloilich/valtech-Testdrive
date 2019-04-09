@@ -11,8 +11,6 @@ public interface UserService {
 	void postUser(User user);
 	
 	User getUser(int id);
-	
-	List<User> getUSers();
-	
+
 
 }

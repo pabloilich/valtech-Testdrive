@@ -8,9 +8,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.valtech.carassignment.apierror.BadRequestException;
 import com.valtech.carassignment.apierror.ExistException;
 import com.valtech.carassignment.apierror.NotFoundException;
 import com.valtech.carassignment.dto.request.ReservationRequest;
@@ -21,6 +24,7 @@ import com.valtech.carassignment.repository.ReservationRepository;
 import com.valtech.carassignment.repository.UserRepository;
 import com.valtech.carassignment.service.ReservationService;
 
+@Transactional
 @Service
 public class ReservationServiceImpl implements ReservationService{
 
@@ -46,11 +50,21 @@ public class ReservationServiceImpl implements ReservationService{
 	@Override
 	public List<LocalDate> getAvailableReservationByDateRange(LocalDate fromDate, LocalDate toDate) {
 	
+	
 		if(fromDate==null)
 			fromDate  = LocalDate.now();
 		
 		if(toDate == null)
-			toDate = LocalDate.now().plusDays(90); //si no colocamos una fecha se deja seteado a 60 dias.
+			toDate = fromDate.plusDays(90); //si no colocamos una fecha se deja seteado a 3 meses.
+		
+		if(fromDate.isAfter(toDate))
+			throw new BadRequestException("La fecha desde es mayor a la fecha hasta");
+
+		if(fromDate.isBefore(LocalDate.now()))
+		{
+			throw new BadRequestException("La fecha desde no puede ser pasada");
+		}
+		
 		
 		List<LocalDate> datesInRange = getDatesInRange(fromDate, toDate);
 	    
@@ -70,15 +84,28 @@ public class ReservationServiceImpl implements ReservationService{
 	@Override
 	public ReservationResponse postReservation(ReservationRequest reservationRequest) {
 		
-	    Reservation r = reservationRepository.findByRegistrationTime(reservationRequest.getRegistrationTime().toLocalDate());
-		if(r != null)
+		LocalDateTime oneWeekFuture 	= LocalDateTime.now().plusDays(7);
+		LocalDateTime threeMonthsFuture = LocalDateTime.now().plusMonths(3);
+		
+		
+		//VALIDAR QUE SE PUEDA RESERVAR COMO MINIMO 1 SEMANA Y MAXIMO 1 MES
+		if(reservationRequest.getRegistrationTime().isBefore(oneWeekFuture) ||
+				reservationRequest.getRegistrationTime().isAfter(threeMonthsFuture))
 		{
-			throw new ExistException("Ya se encuentra ocupado dicho dia");
+			
+			throw new BadRequestException("La reserva puede realizarse con un minimo de 1 semana y maximo 3 meses");
+		}
+		//DEVOLVER LA FECHA DE DEVOLUCION DEL VEHICULO
+		
+	    //Validamos si ya realizaron una reserva durante ese dia
+		if(reservationRepository.findByRegistrationTime(reservationRequest.getRegistrationTime().toLocalDate()).size()>0)
+		{
+			throw new BadRequestException("Ya se encuentra ocupado dicho dia");
 		}
 		
-		if( reservationRequest.getRegistrationTime().getHour()<18)
+		if(reservationRequest.getRegistrationTime().getHour()<18)
 		{
-			throw new ExistException("Puede llevarse el Vehiculo luego de las 18");
+			throw new BadRequestException("Puede llevarse el Vehiculo luego de las 18");
 		}
 		
 		//Obtenemos el usuario y si no existe lo creamos.
@@ -97,26 +124,32 @@ public class ReservationServiceImpl implements ReservationService{
 			throw new ExistException("El usuario ya posee una reserva, no puede realizar otra");
 		}
 		
-		Reservation reservationToSave = new Reservation(reservationRequest.getRegistrationTime(),reservationRequest.getFirstName(),
-				reservationRequest.getLastName(),reservationRequest.getEmail());
+		Reservation reservationToSave = new Reservation(reservationRequest.getRegistrationTime(),user);
 		
-		reservationToSave =reservationRepository.save(reservationToSave);
+		reservationToSave = reservationRepository.save(reservationToSave);
 		
 		return new ReservationResponse(reservationToSave.getReservationId(), reservationToSave.getUser().getEmail(),
-				reservationToSave.getUser().getFirstname(), reservationToSave.getUser().getLastname(), reservationToSave.getRegistrationTime());
+				reservationToSave.getUser().getFirstname(), reservationToSave.getUser().getLastname(), reservationToSave.getRegistrationTime(), reservationToSave.getRegistrationTime().plusDays(1).withHour(18).withMinute(0));
 		
 	}
 
 	@Override
 	public ReservationResponse updateReservation(int idReservation, ReservationRequest reservation) {
 		
+//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+//		LocalDateTime dateTimepost = LocalDateTime.parse(reservation.getRegistrationTime(), formatter);
+	
+		
 		return reservationRepository.findById(idReservation).
 				 map(record -> {
+					 
+					 
 					 record.setRegistrationTime(reservation.getRegistrationTime());
 					 record.setUser(userRepository.findByEmail(reservation.getEmail()));
 					 Reservation updated = reservationRepository.save(record);
 					 return new ReservationResponse(updated.getReservationId(), updated.getUser().getEmail(),
-							 updated.getUser().getFirstname(), updated.getUser().getLastname(), updated.getRegistrationTime());
+							 updated.getUser().getFirstname(), updated.getUser().getLastname(), updated.getRegistrationTime(), 
+							 updated.getRegistrationTime().plusDays(1));
 				 }).orElseThrow(() ->new NotFoundException("No se encuentra dicha reservacion"));
 	
 	}
