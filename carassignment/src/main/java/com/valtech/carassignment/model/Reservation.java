@@ -1,15 +1,18 @@
 package com.valtech.carassignment.model;
 
 import java.time.LocalDateTime;
+import java.util.Calendar;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Version;
 
 @Entity
 public class Reservation {
@@ -23,6 +26,9 @@ public class Reservation {
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
 	private User		  user;
 	
+	@Version
+	@Temporal(TemporalType.TIMESTAMP)
+	private Calendar  	  version;
 	
 	public int getReservationId() {
 		return reservationId;

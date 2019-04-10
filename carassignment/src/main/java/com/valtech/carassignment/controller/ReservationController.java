@@ -39,8 +39,8 @@ public class ReservationController {
 		      response = LocalDate.class)
 	@RequestMapping(value = "/available-reservation", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<List<LocalDate>> getAvailableReservation ( 
-			@RequestParam(name = "dateFrom", required=false)@DateTimeFormat(pattern="dd/MM/yyyy") LocalDate dateFrom,
-			@RequestParam(name = "dateto", required=false) @DateTimeFormat(pattern="dd/MM/yyyy") LocalDate dateTo ) {
+			@RequestParam(name = "dateFrom", required=false)@DateTimeFormat(pattern="dd/MM/yyyy") String dateFrom,
+			@RequestParam(name = "dateto", required=false) @DateTimeFormat(pattern="dd/MM/yyyy") String dateTo ) {
 		
 		return ResponseEntity.ok().body(reservationService.getAvailableReservationByDateRange(dateFrom,dateTo));
 		

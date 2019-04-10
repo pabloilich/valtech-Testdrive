@@ -1,11 +1,10 @@
 package com.valtech.carassignment.exceptionhandling;
 
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.TypeMismatchException;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +37,15 @@ public class HandlerErrorControllerAdvice extends ResponseEntityExceptionHandler
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
  
+    @ExceptionHandler(DateTimeParseException.class)
+    public final ResponseEntity<?> handleDateTimeExceptions(Exception ex, WebRequest request) {
+        List<String> details = new ArrayList<>();
+        details.add(ex.getLocalizedMessage());
+        ErrorResponse error = new ErrorResponse("El formato fecha es invalido, debe ser dd/MM/yyyy", details);
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+    
+    
     @ExceptionHandler(NotFoundException.class)
     public final ResponseEntity<?> handleUserNotFoundException(NotFoundException ex, WebRequest request) {
         List<String> details = new ArrayList<>();

@@ -3,6 +3,7 @@ package com.valtech.carassignment.service.impl;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,14 +49,13 @@ public class ReservationServiceImpl implements ReservationService{
 	}
 
 	@Override
-	public List<LocalDate> getAvailableReservationByDateRange(LocalDate fromDate, LocalDate toDate) {
+	public List<LocalDate> getAvailableReservationByDateRange(String fromDateStr, String toDateStr) {
 	
-	
-		if(fromDate==null)
-			fromDate  = LocalDate.now();
-		
-		if(toDate == null)
-			toDate = fromDate.plusDays(90); //si no colocamos una fecha se deja seteado a 3 meses.
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		LocalDate fromDate			= !fromDateStr.isEmpty()?LocalDate.parse(fromDateStr, formatter)
+											:LocalDate.now();
+		LocalDate toDate 			= !toDateStr.isEmpty()?LocalDate.parse(toDateStr, formatter)
+											:fromDate.plusDays(90);
 		
 		if(fromDate.isAfter(toDate))
 			throw new BadRequestException("La fecha desde es mayor a la fecha hasta");
@@ -100,7 +100,7 @@ public class ReservationServiceImpl implements ReservationService{
 	    //Validamos si ya realizaron una reserva durante ese dia
 		if(reservationRepository.findByRegistrationTime(reservationRequest.getRegistrationTime().toLocalDate()).size()>0)
 		{
-			throw new BadRequestException("Ya se encuentra ocupado dicho dia");
+			throw new ExistException("Ya se encuentra ocupado dicho dia");
 		}
 		
 		if(reservationRequest.getRegistrationTime().getHour()<18)
@@ -128,8 +128,12 @@ public class ReservationServiceImpl implements ReservationService{
 		
 		reservationToSave = reservationRepository.save(reservationToSave);
 		
-		return new ReservationResponse(reservationToSave.getReservationId(), reservationToSave.getUser().getEmail(),
-				reservationToSave.getUser().getFirstname(), reservationToSave.getUser().getLastname(), reservationToSave.getRegistrationTime(), reservationToSave.getRegistrationTime().plusDays(1).withHour(18).withMinute(0));
+		return new ReservationResponse(reservationToSave.getReservationId(), 
+				reservationToSave.getUser().getEmail(),
+				reservationToSave.getUser().getFirstname(), 
+				reservationToSave.getUser().getLastname(), 
+				reservationToSave.getRegistrationTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")), 
+				reservationToSave.getRegistrationTime().plusDays(1).withHour(10).withMinute(0).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
 		
 	}
 
@@ -140,6 +144,16 @@ public class ReservationServiceImpl implements ReservationService{
 //		LocalDateTime dateTimepost = LocalDateTime.parse(reservation.getRegistrationTime(), formatter);
 	
 		
+	    //Validamos si ya realizaron una reserva durante ese dia
+		if(reservationRepository.findByRegistrationTime(reservation.getRegistrationTime().toLocalDate()).size()>0)
+		{
+			throw new ExistException("Ya se encuentra ocupado dicho dia");
+		}
+		
+		if(reservation.getRegistrationTime().getHour()<18)
+		{
+			throw new BadRequestException("Puede llevarse el Vehiculo luego de las 18");
+		}
 		return reservationRepository.findById(idReservation).
 				 map(record -> {
 					 
@@ -147,9 +161,12 @@ public class ReservationServiceImpl implements ReservationService{
 					 record.setRegistrationTime(reservation.getRegistrationTime());
 					 record.setUser(userRepository.findByEmail(reservation.getEmail()));
 					 Reservation updated = reservationRepository.save(record);
-					 return new ReservationResponse(updated.getReservationId(), updated.getUser().getEmail(),
-							 updated.getUser().getFirstname(), updated.getUser().getLastname(), updated.getRegistrationTime(), 
-							 updated.getRegistrationTime().plusDays(1));
+					 return new ReservationResponse(updated.getReservationId(), 
+							 updated.getUser().getEmail(),
+							 updated.getUser().getFirstname(), 
+							 updated.getUser().getLastname(), 
+							 updated.getRegistrationTime().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")), 
+							 updated.getRegistrationTime().plusDays(1).withHour(10).withMinute(0).format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
 				 }).orElseThrow(() ->new NotFoundException("No se encuentra dicha reservacion"));
 	
 	}

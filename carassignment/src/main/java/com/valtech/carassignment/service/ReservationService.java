@@ -12,7 +12,7 @@ public interface ReservationService {
 	
 	Reservation  	   			getReservationById(int id);
 	
-	List<LocalDate>	   			getAvailableReservationByDateRange (LocalDate from, LocalDate to);
+	List<LocalDate>	   			getAvailableReservationByDateRange (String from, String to);
 	
 	ReservationResponse		   	postReservation(ReservationRequest reservation);
 	

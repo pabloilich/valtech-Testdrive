@@ -7,8 +7,8 @@ public class ReservationResponse {
 	private String email;
 	private String firstName;
 	private String lastName;
-	private LocalDateTime   registrationTimeDeparture;
-	private LocalDateTime   registrationTimeArrival;
+	private String registrationTimeDeparture;
+	private String registrationTimeArrival;
 	
 	
 	public String getEmail() {
@@ -37,26 +37,25 @@ public class ReservationResponse {
 		this.id = id;
 	}
 	
-	public  ReservationResponse (int id, String email ,String firstName, String lastName, LocalDateTime registrationTimeDeparture, LocalDateTime registrationTimeArrival )
+	public  ReservationResponse (int id, String email ,String firstName, String lastName, String registrationTimeDeparture, String registrationTimeArrival )
 	{
 		this.id = id;
-		this.firstName = firstName;
-		this.lastName  = lastName;
-		this.email     = email;
-		this.setRegistrationTimeArrival(registrationTimeArrival);
-		this.setRegistrationTimeDeparture(registrationTimeDeparture);
-
+		this.firstName 					= firstName;
+		this.lastName  					= lastName;
+		this.email     					= email;
+		this.registrationTimeDeparture	= registrationTimeDeparture;
+		this.registrationTimeArrival	= registrationTimeArrival;
 	}
-	public LocalDateTime getRegistrationTimeDeparture() {
+	public String getRegistrationTimeDeparture() {
 		return registrationTimeDeparture;
 	}
-	public void setRegistrationTimeDeparture(LocalDateTime registrationTimeDeparture) {
+	public void setRegistrationTimeDeparture(String registrationTimeDeparture) {
 		this.registrationTimeDeparture = registrationTimeDeparture;
 	}
-	public LocalDateTime getRegistrationTimeArrival() {
+	public String getRegistrationTimeArrival() {
 		return registrationTimeArrival;
 	}
-	public void setRegistrationTimeArrival(LocalDateTime registrationTimeArrival) {
+	public void setRegistrationTimeArrival(String registrationTimeArrival) {
 		this.registrationTimeArrival = registrationTimeArrival;
 	}
 }
