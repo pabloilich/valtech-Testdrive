@@ -1,7 +1,5 @@
 package com.valtech.carassignment.dto.request;
 
-import java.time.LocalDateTime;
-
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
@@ -11,7 +9,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 
-@ApiModel(description = "DTO que represent el request de una reservacion")
+@ApiModel(description = "DTO que representa el request de una reservacion")
 
 public class ReservationRequest {
 	@ApiModelProperty(notes = "Correo electronico univoco para referenciar al usuario.", example = "pablo.ilich@gmail.com", required = true)
