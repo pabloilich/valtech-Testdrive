@@ -84,13 +84,15 @@ public class ReservationServiceImpl implements ReservationService{
 	@Override
 	public ReservationResponse postReservation(ReservationRequest reservationRequest) {
 		
-		LocalDateTime oneWeekFuture 	= LocalDateTime.now().plusDays(7);
-		LocalDateTime threeMonthsFuture = LocalDateTime.now().plusMonths(3);
+		LocalDateTime oneWeekFuture 			= LocalDateTime.now().plusDays(7);
+		LocalDateTime threeMonthsFuture 		= LocalDateTime.now().plusMonths(3);
 		
-		
+		DateTimeFormatter formatter 			= DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+		LocalDateTime reservationTimePost 		= LocalDateTime.parse(reservationRequest.getRegistrationTime(), formatter);
+	
 		//VALIDAR QUE SE PUEDA RESERVAR COMO MINIMO 1 SEMANA Y MAXIMO 1 MES
-		if(reservationRequest.getRegistrationTime().isBefore(oneWeekFuture) ||
-				reservationRequest.getRegistrationTime().isAfter(threeMonthsFuture))
+		if(reservationTimePost.isBefore(oneWeekFuture) ||
+				reservationTimePost.isAfter(threeMonthsFuture))
 		{
 			
 			throw new BadRequestException("La reserva puede realizarse con un minimo de 1 semana y maximo 3 meses");
@@ -98,12 +100,12 @@ public class ReservationServiceImpl implements ReservationService{
 		//DEVOLVER LA FECHA DE DEVOLUCION DEL VEHICULO
 		
 	    //Validamos si ya realizaron una reserva durante ese dia
-		if(reservationRepository.findByRegistrationTime(reservationRequest.getRegistrationTime().toLocalDate()).size()>0)
+		if(reservationRepository.findByRegistrationTime(reservationTimePost.toLocalDate()).size()>0)
 		{
 			throw new ExistException("Ya se encuentra ocupado dicho dia");
 		}
 		
-		if(reservationRequest.getRegistrationTime().getHour()<18)
+		if(reservationTimePost.getHour()<18)
 		{
 			throw new BadRequestException("Puede llevarse el Vehiculo luego de las 18");
 		}
@@ -124,7 +126,7 @@ public class ReservationServiceImpl implements ReservationService{
 			throw new ExistException("El usuario ya posee una reserva, no puede realizar otra");
 		}
 		
-		Reservation reservationToSave = new Reservation(reservationRequest.getRegistrationTime(),user);
+		Reservation reservationToSave = new Reservation(reservationTimePost,user);
 		
 		reservationToSave = reservationRepository.save(reservationToSave);
 		
@@ -140,17 +142,17 @@ public class ReservationServiceImpl implements ReservationService{
 	@Override
 	public ReservationResponse updateReservation(int idReservation, ReservationRequest reservation) {
 		
-//		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-//		LocalDateTime dateTimepost = LocalDateTime.parse(reservation.getRegistrationTime(), formatter);
+		DateTimeFormatter formatter 		= DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+		LocalDateTime reservationTimePost 	= LocalDateTime.parse(reservation.getRegistrationTime(), formatter);
 	
 		
 	    //Validamos si ya realizaron una reserva durante ese dia
-		if(reservationRepository.findByRegistrationTime(reservation.getRegistrationTime().toLocalDate()).size()>0)
+		if(reservationRepository.findByRegistrationTime(reservationTimePost.toLocalDate()).size()>0)
 		{
 			throw new ExistException("Ya se encuentra ocupado dicho dia");
 		}
 		
-		if(reservation.getRegistrationTime().getHour()<18)
+		if(reservationTimePost.getHour()<18)
 		{
 			throw new BadRequestException("Puede llevarse el Vehiculo luego de las 18");
 		}
@@ -158,7 +160,7 @@ public class ReservationServiceImpl implements ReservationService{
 				 map(record -> {
 					 
 					 
-					 record.setRegistrationTime(reservation.getRegistrationTime());
+					 record.setRegistrationTime(reservationTimePost);
 					 record.setUser(userRepository.findByEmail(reservation.getEmail()));
 					 Reservation updated = reservationRepository.save(record);
 					 return new ReservationResponse(updated.getReservationId(), 

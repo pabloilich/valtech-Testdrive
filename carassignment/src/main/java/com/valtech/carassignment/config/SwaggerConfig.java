@@ -35,7 +35,7 @@ public class SwaggerConfig {
 	                .version("1.0")
 	                .licenseUrl("")
 	                .contact(new Contact("Pablo Ilich",
-	                		"http://urlfalsa.com", 
+	                		"https://github.com/pabloilich/valtech-Testdrive", 
 	                		"pablo.ilich@gmail.com"))
 	                .build();
 	    }

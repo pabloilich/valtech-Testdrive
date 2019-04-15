@@ -62,8 +62,8 @@ public class ReservationController {
 	
 	@ApiOperation(value = "Endpoint que nos permite modificar una reserva considerando el ID de reserva previamente generado", 
 		      response = ReservationResponse.class)
-	@RequestMapping(value = "/update-reservation", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<ReservationResponse> update(@PathVariable("id") int idReservation,
+	@RequestMapping(value = "/{idReservation}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<ReservationResponse> update(@PathVariable("idReservation") int idReservation,
 													@Valid @RequestBody ReservationRequest reservationRequest){
 	 
 		return ResponseEntity.ok().body(reservationService.updateReservation(idReservation, reservationRequest));

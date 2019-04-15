@@ -26,7 +26,7 @@ public class ReservationRequest {
 	@ApiModelProperty(notes = "Fecha y hora que se realiza la reservacion (Formato dd/MM/yyyy HH:mm)", example = "20/04/2019 18:30", required = true, position = 3)
 	@NotNull(message = "La fecha no puede ser vacia")
 	@JsonFormat(pattern = "dd/MM/yyyy HH:mm")
-	private LocalDateTime   registrationTime;
+	private String registrationTime;
 	
 	public String getEmail() {
 		return email;
@@ -46,10 +46,10 @@ public class ReservationRequest {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	public LocalDateTime getRegistrationTime() {
+	public String getRegistrationTime() {
 		return registrationTime;
 	}
-	public void setRegistrationTime(LocalDateTime registrationTime) {
+	public void setRegistrationTime(String registrationTime) {
 		this.registrationTime = registrationTime;
 	}
 	
